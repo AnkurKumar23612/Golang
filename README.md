@@ -3,13 +3,21 @@
 
 
 sudo apt-get update
+
 sudo apt-get -y upgrade
+
 wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+
 sudo tar -xvf go1.13.3.linux-amd64.tar.gz
+
 sudo mv go /usr/local
+
 export GOROOT=/usr/local/go
+
 export GOPATH=$HOME/Projects/Proj1
+
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
 go version
 						
 					installation Visual studio
@@ -18,11 +26,17 @@ go version
 
 
 sudo apt update
+
 sudo apt install software-properties-common apt-transport-https wget
+
 wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+
 sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
+
 sudo apt update
+
 sudo apt install code
+
 code
 				          First step
 
