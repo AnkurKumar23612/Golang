@@ -578,3 +578,198 @@ func TestSaveToDeckAndNewDeckFromFile(t *testing.T) {
 
 
 
+
+				Struct and Pointer
+
+
+package main
+
+import "fmt"
+
+type contactInfo struct {
+	email   string
+	zipCode int
+}
+
+type person struct {
+	firstName string
+	lastName  string
+	contactInfo
+}
+
+func main() {
+	jim := person{
+		firstName: "Jim",
+		lastName:  "Party",
+		contactInfo: contactInfo{
+			email:   "jim@gmail.com",
+			zipCode: 94000,
+		},
+	}
+
+	jim.updateName("jimmy")
+	jim.print()
+}
+
+func (pointerToPerson *person) updateName(newFirstName string) {
+	(*pointerToPerson).firstName = newFirstName
+}
+
+func (p person) print() {
+
+	fmt.Printf("%+v", p)
+
+}
+
+
+
+
+					Map
+
+package main
+
+import "fmt"
+
+func main() {
+	colors := map[string]string{
+		"red":   "#ff0000",
+		"green": "#4bf745",
+		"white": "#ffffff",
+	}
+
+	colors["yellow"] = "laksjdf"
+	delete(colors, "yellow")
+
+	printMap(colors)
+}
+
+func printMap(c map[string]string) {
+	for color, hex := range c {
+		fmt.Println("Hex code for", color, "is", hex)
+	}
+}
+
+
+
+
+
+
+					Interfaces
+
+package main
+
+import "fmt"
+
+type bot interface {
+	getGreeting() string
+}
+
+type englishBot struct{}
+type spanishBot struct{}
+
+func main() {
+	eb := englishBot{}
+	sb := spanishBot{}
+
+	printGreeting(eb)
+	printGreeting(sb)
+}
+
+func printGreeting(b bot) {
+	fmt.Println(b.getGreeting())
+}
+
+func (englishBot) getGreeting() string {
+	// VERY custom logic for generating an english greeting
+	return "Hi there!"
+}
+
+func (spanishBot) getGreeting() string {
+	return "Hola!"
+}
+
+
+
+					Http, Reader and Writer
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
+
+type logWriter struct{}
+
+func main() {
+	resp, err := http.Get("http://google.com")
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	lw := logWriter{}
+
+	io.Copy(lw, resp.Body)
+}
+
+func (logWriter) Write(bs []byte) (int, error) {
+	fmt.Println(string(bs))
+	fmt.Println("Just wrote this many bytes:", len(bs))
+	return len(bs), nil
+}
+
+
+
+
+					Go Routines and Channels
+
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+)
+
+func main() {
+
+	links := []string{
+		"http://google.com",
+		"http://facebook.com",
+		"http://stackoverflow.com",
+		"http://golang.org",
+		"http://amazon.com",
+	}
+
+	c := make(chan string)
+
+	for _, link := range links {
+		go checkLink(link, c)
+	}
+
+	for l := range c {
+		go func(link string) {
+			time.Sleep(5 * time.Second)
+			checkLink(link, c)
+		}(l)
+	}
+}
+
+func checkLink(link string, c chan string) {
+	_, err := http.Get(link)
+	if err != nil {
+		fmt.Println(link, "might be down!")
+		c <- link
+		return
+	}
+
+	fmt.Println(link, "is up!")
+	c <- link
+}
+
+
+
+
+
